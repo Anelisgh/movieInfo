@@ -16,7 +16,7 @@ public class WatchlistController {
     @Autowired
     private WatchlistService watchlistService;
 
-    @PostMapping
+    @PostMapping("add")
     public ResponseEntity<WatchlistResponse> createWatchlist(@RequestBody @Valid WatchlistRequest watchlistRequest) {
         WatchlistResponse responseDTO = watchlistService.createWatchlist(watchlistRequest);
         return ResponseEntity.ok(responseDTO);
