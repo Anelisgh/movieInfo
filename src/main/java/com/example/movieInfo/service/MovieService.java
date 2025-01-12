@@ -87,16 +87,37 @@ public class MovieService {
         return movieMapper.toResponse(movie);
     }
 
+    private Director findOrCreateDirector(String directorName) {
+        return directorRepository.findByName(directorName)
+                .orElseGet(() -> {
+                    Director newDirector = new Director();
+                    newDirector.setName(directorName);
+                    return directorRepository.save(newDirector);
+                });
+    }
+
+    private Set<Actor> findOrCreateActors(Set<String> actorNames) {
+        return actorNames.stream()
+                .map(name -> actorRepository.findByName(name)
+                        .orElseGet(() -> {
+                            Actor newActor = new Actor();
+                            newActor.setName(name);
+                            return actorRepository.save(newActor);
+                        }))
+                .collect(Collectors.toSet());
+    }
+
     public Movie addMovie(MovieRequest movieRequest) {
         checkForDuplicateMovie(movieRequest.getTitle(), movieRequest.getReleaseYear(), movieRequest.getDirector());
-
-        Director director = findDirectorByNameOrThrow(movieRequest.getDirector());
-        Set<Actor> actors = findActorsByNameOrThrow(movieRequest.getActors());
+        Director director = findOrCreateDirector(movieRequest.getDirector());
+        Set<Actor> actors = findOrCreateActors(movieRequest.getActors());
         Movie movie = movieMapper.toEntity(movieRequest);
         movie.setDirector(director);
         movie.setActors(actors);
+
         return movieRepository.save(movie);
     }
+
 
     public MovieResponse updateMovie(Long id, MovieRequest movieRequest) {
         Movie existingMovie = findMovieByIdOrThrow(id);
