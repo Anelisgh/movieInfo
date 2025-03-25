@@ -1,0 +1,264 @@
+.watchlist-details-page{
+  .movie-info h4{
+      padding-top: 5px;
+      margin: 0;
+      font-size: 16px;
+      font-family: Inclusive Sans;
+      font-weight: normal;
+      text-transform: capitalize;
+  }
+
+  .movie-link {
+    text-decoration: none !important; 
+    color: inherit; 
+}
+
+  .watchlist-title {
+    font-family: "Belanosima", serif;
+    font-weight: 400;
+    font-size: 30px;
+    color: #333;
+  }
+  
+  .header-watchlist {
+    display: flex; /* Activează Flexbox */
+    justify-content: space-between; /* Spațiu maxim între elemente */
+    align-items: center; /* Centrare pe verticală (opțional) */
+    padding: 10px; /* Spațiu în jur (opțional) */
+    margin-right: 25px;
+    margin-left: 20px;
+  }
+
+  .header-watchlist h1{
+    margin-bottom: 0px;
+    margin-top: 0px;
+  }
+
+  .icon-text {
+    font-size: 14px; /* Dimensiunea textului */
+    font-family: "Inclusive Sans", sans-serif;
+    color: #333; /* Culoarea textului */
+    text-align: center; /* Centrează textul */
+  }
+
+  .icon-with-text {
+    display: flex;
+    flex-direction: column; /* Textul va fi sub iconiță */
+    align-items: center;    /* Centrează textul */
+    text-align: center;     /* Asigură centrarea textului */
+  }
+
+  .edit-controls img {
+    width: 40px; /* Dimensiunea imaginii (ajustează după preferință) */
+    height: 40px; /* Ajustează dimensiunea imaginii */
+    cursor: pointer; /* Pointer pentru a sugera clic */
+    margin-right: 0px;
+  }
+
+  .edit-name-icon {
+    width: 35px;
+  }
+
+  .watchlist-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 100;
+    min-width: 180px;
+  }
+  
+  .watchlist-item {
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .watchlist-item:hover {
+    background: #f5f5f5;
+  }
+
+    .edit-controls {
+      display: flex;
+      gap: 30px; /* Spațiu între butoane */
+      position: relative; /* Asigură că dropdown-ul se va poziționa relativ la acest container */
+    }
+  
+    .action-group {
+      position: relative; /* Container pentru imagine + dropdown */
+      display: flex;
+      flex-direction: column; /* Stack pe verticală */
+      align-items: center; /* Centrare pe mijloc */
+    }
+  
+    .move-dropdown {
+      position: absolute;
+      top: 43px; /* Poziționează dropdown-ul chiar sub imagine */
+      left: 0; 
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+      min-width: 180px;
+    }
+  
+    .watchlist-dropdown, .move-dropdown {
+      width: 100%; /* Se va alinia corect pe lățimea părintele */
+    }
+  
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px; /* Spațiu între checkbox și text */
+      padding: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .dropdown-item:hover {
+      background: #f5f5f5;
+    }
+    
+    .dropdown-checkbox {
+      width: 16px;
+      height: 16px;
+      accent-color: #c76565; /* Culoarea checkbox-ului */
+      cursor: pointer;
+    }    
+  
+  .movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .movie-card {
+    position: relative;
+    background: none;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+  
+  .movie-card:hover {
+    transform: scale(1.03);
+  }
+
+  .movie-card.edit-mode:hover {
+    transform: none; 
+    cursor: default; 
+  }
+  
+  .movie-poster {
+    height: 300px;
+    position: relative;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .movie-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .movie-checkbox {
+    position: absolute;
+    z-index: 2;
+    top: 0px;
+    right: 0px;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.5); 
+    border: 1px solid white; 
+    border-radius: 5px;
+    appearance: none; /* Ascunde stilul implicit */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.movie-checkbox:checked {
+    background-color: #c76565; /* Fundalul pentru stare "checked" */
+    border-color: #c76565; /* Culoarea bordurii pentru "checked" */
+}
+
+.movie-checkbox:checked::after {
+    content: "✔"; /* Simbolul bifat */
+    color: white; 
+    font-size: 16px;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+}
+
+  
+  .placeholder-poster {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    color: #666;
+    font-size: 0.9rem;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  .movie-info .genre {
+    font-size: 0.8rem;
+    color: #666;
+    margin: 5px 0 0 0;
+    font-family: 'Inclusive Sans', sans-serif;
+  }
+  
+  .no-movies {
+    text-align: center;
+    color: #666;
+    font-size: 1.2rem;
+    grid-column: 1 / -1;
+  }
+  
+  .loading, .error {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-top: 2rem;
+  }
+
+  .editable-watchlist-name {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Spațiu între nume și imagine */
+  }
+  
+  .edit-name-display {
+    font-family: "Belanosima", serif;
+    font-size: 30px;
+    font-weight: 400;
+    color: #333;
+    outline: none; /* Elimină border-ul când este selectat */
+    border: 1px solid transparent; /* Asigură un aspect consistent */
+    padding: 5px 10px;
+    border-radius: 5px;
+    background: #f9f9f9; /* Fundal deschis */
+    transition: border 0.2s ease-in-out;
+    margin-left: 20px;
+  }
+  
+  .edit-name-display:focus {
+    border: 1px solid #C19191; /* Border vizibil când e activ */
+    background: #fff; /* Fundal alb la editare */
+  }
+
+
+  
+  }

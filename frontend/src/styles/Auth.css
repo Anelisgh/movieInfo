@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Belanosima:wght@400;600;700&family=Inclusive+Sans:ital,wght@0,300..700;1,300..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+body {
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+  
+  .auth-page::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -2;
+  }
+  
+  .auth-page::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/public/icons/background.jpg') lightgray 0px -87.213px / 100% 120.521% no-repeat;
+    background-size: cover;
+    background-repeat: repeat;
+    opacity: 0.2;
+    z-index: -1;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25) inset;
+  }
+
+.login-container{
+/* Formular */
+/* Efect de sticlă */
+h2{
+    font-weight: 200;
+}
+
+.glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    font-family: "Belanosima", serif;    
+  }
+/* Inputuri */
+.glass-input,
+.form-input {
+  width: calc(100% - 2rem); 
+  padding: 0.8rem;
+  background-color: white; 
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 1rem;
+  color: black;
+  transition: all 0.3s ease;
+  margin-bottom: 0.5rem; 
+  margin-left: auto;
+  margin-right: auto;
+}
+
+  
+.glass-input:focus,
+.form-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 2px black;
+}
+
+/* Grup remember-group */
+.remember-group {
+  font-size: large;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem; /* Ajustează distanța de sub remember-group */}
+
+/* Buton */
+.submit-btn {
+  margin: 0 auto;
+  margin-top: 30px;
+  width: 30%;
+  padding: 5px;
+  background: #D9BDBD; 
+  border: 1px solid #F0E9E9;
+  border-radius: 8px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Belanosima", serif;
+}
+
+.submit-btn:hover {
+  background: #CDA7A7; 
+  transform: translateY(-1px);
+}
+
+.btn-arrow {
+  width: 40px;
+}
+
+/* Container principal */
+
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 75vh;
+  padding: 2rem;
+}
+
+/* Card formular */
+.auth-card {
+  width: 100%;
+  max-width: 400px; 
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+  
+  /* Titlu */
+  .auth-title {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+    letter-spacing: 1px;
+  }
+  
+  /* Grupări formular */
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  /* Etichete formular */
+  .form-label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 21px;
+  }
+
+  /* Link înregistrare */
+  .register-link {
+    text-align: center;
+    margin-top: 1.5rem;
+  }
+  
+  .register-link a {
+    color: #2B89DA;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid #2B89DA;
+  }
+}
+  

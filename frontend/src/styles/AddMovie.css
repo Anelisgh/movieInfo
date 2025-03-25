@@ -1,0 +1,194 @@
+@import url('https://fonts.googleapis.com/css2?family=Belanosima:wght@400;600;700&family=Inclusive+Sans:ital,wght@0,300..700;1,300..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+body {
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+/* Background and glass-effect styles */
+.add-movie-page::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #F0E9E9;
+    z-index: -2;
+}
+
+.add-movie-page::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/public/icons/background.jpg') lightgray 0px -87.213px / 100% 120.521% no-repeat;
+    background-size: cover;
+    background-repeat: repeat;
+    opacity: 0.2;
+    z-index: -1;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25) inset;
+}
+
+.add-movie-page{
+
+/* Glass effect */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    font-family: "Belanosima", serif;
+}
+
+.form-label {
+    font-size: 16px;
+    display: block; 
+    margin-top: 20px;
+    font-family: Inclusive Sans;
+    font-weight: 500;
+}
+
+.form-group select{
+    text-transform: capitalize;
+}
+
+/* Input fields */
+.glass-input,
+.form-input,
+select.glass-input {
+    width: 95%;
+    padding: 0.7rem;
+    background-color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    font-size: 15px;
+    color: black;
+    transition: all 0.3s ease;
+    margin-top: 5px;
+    font-family: Inclusive Sans;
+}
+
+.glass-input:focus,
+.form-input:focus,
+select.glass-input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 2px black;
+}
+
+/* Submit button */
+.submit-btn {
+    margin: 0 auto;
+    margin-top: 20px;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background: #D9BDBD;
+    border: 1px solid #F0E9E9;
+    border-radius: 8px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: Inclusive Sans;
+    font-weight: 500;
+}
+
+.submit-btn:hover {
+    background: #CDA7A7;
+    transform: translateY(-1px);
+}
+
+/* Adaugă această regulă pentru select */
+select.glass-input {
+    width: 100%;
+    height: 100%;
+    min-height: 42px; /* Ajustează la înălțimea input-urilor */
+}
+/* Main container */
+.add-movie-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 75vh;
+    padding: 2rem;
+}
+
+.add-movie-form {
+    width: 100%;
+    max-width: 500px;
+    padding: 2rem;
+    border-radius: 16px;
+    align-items: center;
+}
+.form-title {
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    gap: 5px; 
+    text-align: center;
+}
+.form-title img{
+    width: 35px;
+}
+.form-title h2 {
+    font-size: 24px;
+    text-align: center;
+    font-weight: 200;
+    margin: 0;
+}
+
+/* Alinierea butoanelor pentru actori */
+.actor-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.actor-input input {
+    flex: 1;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.actor-input button {
+    background: #D9BDBD;
+    border: 1px solid #F0E9E9;
+    border-radius: 8px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 2.5rem;
+    width: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin-bottom: 10px;
+}
+
+.actor-input button:hover {
+    background: #CDA7A7;
+    transform: translateY(-1px);
+}
+.form-group {
+    width: 100%;
+}
+
+.error{
+    color: #922B21;
+}
+.glass-input.error-border {
+    border-color: #922B21; /* Burgundy */
+    box-shadow: 0 0 2px #922a2146; /* O umbră subtilă pentru accent */
+}
+
+}

@@ -1,0 +1,298 @@
+.watchlist-page{
+
+.watchlists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h2 {
+    font-family: "Belanosima", serif;
+    font-weight: 200;
+    font-size: 25px;
+    margin-bottom: 10px;
+    margin-left: 40px;
+}
+
+/* Watchlist.css */
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: 0px;
+  }
+    
+  .watchlist-card.delete-mode {
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .watchlist-card.delete-mode:hover {
+    transform: scale(1.02);
+  }
+  
+  /* Watchlist.css */
+.watchlist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 40px 10px 40px;
+  }
+  
+  .header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+  }
+  
+  .selected-count {
+    color: #666;
+    font-size: 0.9rem;
+  }
+  
+  /* Keep existing card selection styles */
+  .watchlist-card.selected {
+    outline: 2px solid #c76565;
+  }
+  
+  .selection-checkbox {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    z-index: 1;
+  }
+  
+  .selection-checkbox input {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.5); 
+    border: 1px solid white; 
+    appearance: none; /* Ascunde aspectul implicit al checkbox-ului */
+    border-radius: 5px;
+    position: relative; /* Pregătire pentru ::after */
+}
+
+.selection-checkbox input:checked {
+    background-color: #c76565; /* Culoarea fundalului pentru checkbox bifat */
+    border-color: #c76565; /* Culoarea bordurii pentru checkbox bifat */
+}
+
+.selection-checkbox input:checked::after {
+    content: "✔"; /* Simbolul bifat */
+    color: white; /* Culoarea simbolului */
+    font-size: 14px; /* Ajustează dimensiunea */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centrare */
+    font-weight: bold;
+}
+
+  /* Delete confirmation modal specific styles */
+  .modal-content p {
+    margin-bottom: 1.5rem;
+    color: #666;
+  }
+
+.watchlist-card {
+    position: relative;
+    background: #D9BDBD;
+    border-radius: 10px;
+    padding: 15px;
+    transition: transform 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.watchlist-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+.watchlist-card:hover {
+    transform: scale(1.02);
+}
+
+.movies-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+.movie-thumbnail {
+    position: relative;
+    padding-top: 100%; /* Aspect ratio 1:1 */
+    overflow: hidden;
+    border-radius: 3px;
+}
+
+.movie-thumbnail img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 0.8em;
+}
+
+.movie-thumbnail.invisible {
+    visibility: hidden;
+}
+
+.watchlist-title h3 {
+    margin-bottom: 0;
+    font-size: 14px;
+    font-family: Inclusive Sans;
+    font-weight: 400;
+  }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .watchlists-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .watchlist-card {
+        padding: 10px;
+    }
+    
+    .watchlist-title h3 {
+        font-size: 1rem;
+    }
+}
+
+/* Stiluri pentru butonul de creare listă */
+/* Stiluri pentru butoane cu dimensiuni uniforme */
+.create-list-button, .delete-mode-button {
+    border-radius: 10px;
+    background: #D9BDBD;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    flex-shrink: 0;
+    border: none;
+    align-items: center;
+    display: flex;
+    justify-content: center; /* Aliniere text pe centru */
+    gap: 5px;
+}
+
+.create-list-button:hover, .delete-mode-button:hover {
+    background-color: #C19191;
+}
+
+.delete-mode-button:disabled {
+    background-color: #D9BDBD;
+    cursor: not-allowed;
+}
+
+.delete-mode-button img {
+    width: 25px;
+    margin-right: 5px;
+}
+
+.watchlist-card.selected {
+    outline: 2px solid #c76565;
+}
+
+  .create-list-button img{
+    width: 25px;  
+    margin-right: 5px; 
+  }
+  
+  /* Stiluri pentru modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background-color: white;
+    /* background-color: #F0DADA; */
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .modal-content h3 {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+  }
+  
+  .modal-content input {
+    width: 93%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .modal-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  .modal-buttons button:first-child {
+    background-color: #C19191; /* Aliniat cu hover-ul din .create-list-button */
+    color: white;
+}
+
+.modal-buttons button:first-child:hover {
+    background-color: #A87373; /* O nuanță mai închisă pentru efectul hover */
+}
+
+.modal-buttons button:last-child {
+    background-color: #AA7070; 
+    color: white;
+}
+
+.modal-buttons button:last-child:hover {
+    background-color: #AA7070; /* Efect hover pentru butonul de anulare */
+}
+
+.modal-content h3{
+    font-size: 20px;
+    font-family: Belanosima;
+    font-weight: 200;
+    margin-top: 10px;
+}
+}

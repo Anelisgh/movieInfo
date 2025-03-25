@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Belanosima:wght@400;600;700&family=Inclusive+Sans:ital,wght@0,300..700;1,300..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  position: relative;
+  background: #F0E9E9;
+}
+
+.login-container {
+  min-height: 100vh;
+}
+
+.nav-icon {
+  width: 35px;
+  height: 35px;
+  flex-shrink: 0;
+}
+
+/* Header */
+.main-header {
+  position: relative;
+  background: #e2cfcf; /* Asigură-te că fundalul inițial este setat */
+  box-shadow: 0 0.5px 8px 0.5px #E9DCDC;
+}
+
+.main-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: inherit; /* Moștenește fundalul de la elementul părinte */
+  filter: blur(2px); /* Aplică blur doar fundalului */
+  z-index: -1; /* Asigură-te că fundalul rămâne în spatele conținutului */
+}
+
+.header-content {
+  max-width: 1500px;
+  height: 70px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo-image {
+  width: 200px; /* Poți ajusta dimensiunea după preferință */
+  height: auto; /* Păstrează proporțiile imaginii */
+}
+
+.pre-logo-image {
+  width: 40px; /* Ajustează dimensiunea după preferință */
+  height: auto; /* Păstrează proporțiile imaginii */
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Stiluri pentru search form */
+.search-form {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 1rem;
+}
+
+.search-input {
+  width: 300px;
+  padding: 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 14px;
+  color: black;
+}
+
+.main-nav {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  font-size: 12px;
+  font-family: Inclusive Sans;
+  font-weight: 450;
+}
+
+.nav-link {
+  color: black;
+  text-decoration: none;
+  transition: color 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-link:hover {
+  color: #AA7070;
+}

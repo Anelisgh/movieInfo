@@ -1,0 +1,92 @@
+CREATE TABLE `actors` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `birth_date` date DEFAULT NULL,
+  `debut_year` int DEFAULT NULL,
+  `is_active` bit(1) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UK1gagqkxrjo8341on94djf9y01` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci 
+
+CREATE TABLE `directors` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `birth_date` date DEFAULT NULL,
+  `debut_year` int DEFAULT NULL,
+  `is_active` bit(1) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UKt6u48cmktdmyieuc2b6y4umn` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci 
+
+CREATE TABLE `movie_actor` (
+  `movie_id` bigint NOT NULL,
+  `actor_id` bigint NOT NULL,
+  PRIMARY KEY (`movie_id`,`actor_id`),
+  KEY `FKr5wsak3io275nfc8jc5mtup2` (`actor_id`),
+  CONSTRAINT `FK90bbe6vpr6eoahw20ta95nkta` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`),
+  CONSTRAINT `FKr5wsak3io275nfc8jc5mtup2` FOREIGN KEY (`actor_id`) REFERENCES `actors` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
+
+CREATE TABLE `movies` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `description` varchar(255) DEFAULT NULL,
+  `genre` enum('ACTION','ADVENTURE','ANIMATION','COMEDY','DOCUMENTARY','DRAMA','FANTASY','HORROR','ROMANCE','SCI_FI','THRILLER') DEFAULT NULL,
+  `release_year` int DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `director_id` bigint DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK5ft3u8k962bmjd8rn2mr77j8d` (`director_id`),
+  CONSTRAINT `FK5ft3u8k962bmjd8rn2mr77j8d` FOREIGN KEY (`director_id`) REFERENCES `directors` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci 
+
+CREATE TABLE `reviews` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `comment` varchar(255) DEFAULT NULL,
+  `rating` double DEFAULT NULL,
+  `movie_id` bigint DEFAULT NULL,
+  `user_id` bigint DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK87tlqya0rq8ijfjscldpvvdyq` (`movie_id`),
+  KEY `FKcgy7qjc1r99dp117y9en6lxye` (`user_id`),
+  CONSTRAINT `FK87tlqya0rq8ijfjscldpvvdyq` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`),
+  CONSTRAINT `FKcgy7qjc1r99dp117y9en6lxye` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci 
+
+CREATE TABLE `users` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+
+CREATE TABLE `watched_movies` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `is_watched` tinyint(1) NOT NULL DEFAULT '0',
+  `watch_date` date DEFAULT NULL,
+  `movie_id` bigint NOT NULL,
+  `user_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKd3n78n4xdmbmj95uwknioqut3` (`movie_id`),
+  KEY `FKiq1etortlkgvt122ousi3hksv` (`user_id`),
+  CONSTRAINT `FKd3n78n4xdmbmj95uwknioqut3` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`),
+  CONSTRAINT `FKiq1etortlkgvt122ousi3hksv` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci 
+
+CREATE TABLE `watchlist_movie` (
+  `watchlist_id` bigint NOT NULL,
+  `movie_id` bigint NOT NULL,
+  PRIMARY KEY (`watchlist_id`,`movie_id`),
+  KEY `FKc26dlxrxso17ix0we5avn2msb` (`movie_id`),
+  CONSTRAINT `FKc26dlxrxso17ix0we5avn2msb` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`id`),
+  CONSTRAINT `FKtksh092j5eon7fcfb3p5j8ug8` FOREIGN KEY (`watchlist_id`) REFERENCES `watchlists` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci 
+
+CREATE TABLE `watchlists` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `user_id` bigint DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKsjis83bxhryaemq9m6gv5r0pb` (`user_id`),
+  CONSTRAINT `FKsjis83bxhryaemq9m6gv5r0pb` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
