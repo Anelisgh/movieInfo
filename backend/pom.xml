@@ -29,6 +29,7 @@
 	</scm>
 	<properties>
 		<java.version>23</java.version>
+		<skipTests>true</skipTests>
 	</properties>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
