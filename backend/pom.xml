@@ -11,6 +11,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>movieInfo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>movieInfo</name>
 	<description>Project for Java Class</description>
 	<url/>
@@ -154,6 +155,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>movieInfo</finalName> <!-- Acest nume definește fișierul .jar -->
 		<plugins>
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
@@ -172,15 +174,6 @@
 						</configuration>
 					</execution>
 				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.springframework.restdocs</groupId>
-						<artifactId>spring-restdocs-asciidoctor</artifactId>
-						<version>${spring-restdocs.version}</version>
-					</dependency>
-
-
-				</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
