@@ -1,14 +1,13 @@
-FROM eclipse-temurin:21-jdk
-
-RUN mkdir -p /app/src/main/resources/static
+FROM eclipse-temurin:21-jdk AS builder
 WORKDIR /app
 COPY backend/pom.xml backend/mvnw* ./
 COPY backend/.mvn .mvn
+RUN ./mvnw dependency:go-offline -B
 COPY backend/src src
-COPY --chown=1001:0 frontend/build/ src/main/resources/static/
-
-RUN ./mvnw dependency:go-offline
+COPY frontend/build src/main/resources/static/
 RUN ./mvnw clean package -DskipTests
-
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY --from=builder /app/target/movieInfo.jar .
 EXPOSE 8080
-CMD ["java", "-jar", "target/movieInfo.jar"]
+CMD ["java", "-jar", "movieInfo.jar"]
