@@ -33,13 +33,22 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                     FilterChain chain)
             throws ServletException, IOException {
         String path = request.getRequestURI();
-// adica nu avem nevoie de token pt ele
-        // Ignoră endpoint-urile publice
-        if (path.equals("/auth/register") || path.equals("/auth/login") || path.equals("/movies/recommendations")) {
+
+        // Ignoră endpoint-urile publice cu noile rute
+        if (path.equals("/auth/register") ||
+                path.equals("/auth/login") ||
+                path.startsWith("/static/") ||
+                path.equals("/favicon.ico") ||
+                path.startsWith("/icons/") ||
+                path.equals("/api/movies/recommendations") ||
+                path.equals("/api/movies/search") ||
+                path.equals("/api/movies/genres") ||
+                path.matches("/api/movies/\\d+") || // ID numeric
+                path.matches("/api/movies/[a-fA-F0-9-]{36}")) { // UUID
             chain.doFilter(request, response);
             return;
         }
-        // Extrage token-ul din header
+
         String token = extractToken(request);
 
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
@@ -48,7 +57,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         if (token != null && validateToken(token)) {
-            // Autentifică utilizatorul dacă token-ul este valid
             String username = getUsernameFromToken(token);
             UserDetails userDetails = userService.loadUserByUsername(username);
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
@@ -56,7 +64,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             );
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
-
         chain.doFilter(request, response);
     }
 

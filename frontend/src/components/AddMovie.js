@@ -21,7 +21,7 @@ const AddMovie = () => {
     useEffect(() => {
         const fetchGenres = async () => {
             try {
-                const response = await API.get('/movies/genres');
+                const response = await API.get('/api/movies/genres');
                 const sortedGenres = response.data.sort();
                 // Transformă textul în lowercase sa-l facem capitalize
                 const lowerCaseGenres = sortedGenres.map(genre => genre.toLowerCase());
@@ -76,7 +76,7 @@ const AddMovie = () => {
                 actors: formData.actors.filter(actor => actor.trim())
             };
     
-            await API.post('/movies/add', movieData);
+            await API.post('/api/movies/add', movieData);
             setSuccessMessage('The movie has been added successfully!');
             setErrorMessage('');
             // Reset the form

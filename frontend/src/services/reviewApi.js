@@ -6,7 +6,9 @@ export const getUserReviewForMovie = async (movieId) => {
         const response = await API.get(`/reviews/user/${movieId}`);
         return response.data;
     } catch (error) {
-        console.error('Error fetching user review:', error);
+        if (error.response?.status === 401) {
+            return null; 
+        }
         throw error;
     }
 };

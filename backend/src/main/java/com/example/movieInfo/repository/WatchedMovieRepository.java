@@ -15,5 +15,6 @@ public interface WatchedMovieRepository extends JpaRepository<WatchedMovies, Lon
     Optional<WatchedMovies> findByUserAndMovieId(User user, Long movieId);
     List<WatchedMovies> findByUser(User user);
     boolean existsByUserAndMovieIdAndIsWatchedIsTrue(User user, Long movieId);
+    void deleteAllByUser(User user);
 }
 

@@ -4,6 +4,7 @@ import com.example.movieInfo.dto.*;
 import com.example.movieInfo.exception.DuplicateResourceException;
 import com.example.movieInfo.exception.InvalidPasswordException;
 import com.example.movieInfo.exception.ResourceNotFoundException;
+import com.example.movieInfo.exception.UsernameNotFoundException;
 import com.example.movieInfo.mapper.UserMapper;
 import com.example.movieInfo.model.User;
 import com.example.movieInfo.repository.UserRepository;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -63,18 +65,21 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
-        boolean isAuthenticated = userService.authenticateUser(
-                loginRequest.getUsername(),
-                loginRequest.getPassword()
-        );
-
-        if (isAuthenticated) {
-            // Generează token JWT
+        try {
+            userService.authenticateUser(loginRequest.getUsername(), loginRequest.getPassword());
             String token = userService.generateJwtToken(loginRequest.getUsername());
-            return ResponseEntity.ok().body(Map.of("token", token));
+            return ResponseEntity.ok(Map.of("success", true, "token", token));
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                    "success", false,
+                    "error", "Username not found"
+            ));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                    "success", false,
+                    "error", "Invalid password"
+            ));
         }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
     }
 
     @PutMapping("/profile")
@@ -133,18 +138,53 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
         try {
+            // Verifică autentificarea
+            if (authentication == null) {
+                System.out.println("⚠️ /auth/me called without authentication");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authenticated");
+            }
+
+            String username = authentication.getName();
+            System.out.println("🔑 Authenticated user: " + username);
+
+            // Log database query
+            System.out.println("🔍 Searching user in DB: " + username);
+            User user = userRepository.findByName(username)
+                    .orElseThrow(() -> {
+                        System.out.println("❌ User not found: " + username);
+                        return new ResourceNotFoundException("User not found");
+                    });
+
+            System.out.println("✅ Found user: " + user.getEmail());
+
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "data", userMapper.toResponse(user)
+            ));
+        } catch (Exception e) {
+            System.err.println("🔥 Error in /auth/me: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "success", false,
+                    "error", "Internal server error"
+            ));
+        }
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteUser(Authentication authentication) {
+        try {
             String username = authentication.getName();
             User user = userRepository.findByName(username)
                     .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-            UserResponse userResponse = userMapper.toResponse(user);
-
+            userService.deleteUser(user.getId());
             return ResponseEntity.ok(Map.of(
                     "success", true,
-                    "data", userResponse
+                    "message", "Account deleted successfully"
             ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
                     "success", false,
                     "error", e.getMessage()
             ));

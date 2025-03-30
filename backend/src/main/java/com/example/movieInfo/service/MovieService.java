@@ -49,27 +49,9 @@ public class MovieService {
                 .orElseThrow(() -> new ResourceNotFoundException("Movie not found with ID: " + id));
     }
 
-    private Director findDirectorByNameOrThrow(String directorName) {
-        return directorRepository.findByName(directorName)
-                .orElseThrow(() -> new ResourceNotFoundException("Director not found with name: " + directorName));
-    }
-
-    private Set<Actor> findActorsByNameOrThrow(Set<String> actorNames){
-        return actorNames.stream()
-                .map(actorName -> actorRepository.findByName(actorName)
-                        .orElseThrow(() -> new ResourceNotFoundException("Actor not found with name: " + actorName)))
-                .collect(Collectors.toSet());
-    }
-
     private List<MovieResponse> mapMoviesToResponses(List<Movie> movies) {
         return movies.stream()
                 .map(movieMapper::toResponse)
-                .collect(Collectors.toList());
-    }
-
-    private List<Movie> sortMoviesByReleaseYear(List<Movie> movies) {
-        return movies.stream()
-                .sorted(Comparator.comparing(Movie::getReleaseYear))
                 .collect(Collectors.toList());
     }
 
@@ -122,84 +104,11 @@ public class MovieService {
         return movieRepository.save(movie);
     }
 
-    public MovieResponse updateMovie(Long id, MovieRequest movieRequest) {
-        Movie existingMovie = findMovieByIdOrThrow(id);
-
-        existingMovie.setTitle(movieRequest.getTitle());
-        existingMovie.setDescription(movieRequest.getDescription());
-        existingMovie.setReleaseYear(movieRequest.getReleaseYear());
-        existingMovie.setGenre(movieRequest.getGenre());
-        existingMovie.setPhotoUrl(movieRequest.getPhotoUrl());
-        Director director = findDirectorByNameOrThrow(movieRequest.getDirector());
-        existingMovie.setDirector(director);
-        Set<Actor> actors = findActorsByNameOrThrow(movieRequest.getActors());
-        existingMovie.setActors(actors);
-
-        Movie updatedMovie = movieRepository.save(existingMovie);
-        return movieMapper.toResponse(updatedMovie);
-    }
-
-    @Transactional
-    public void deleteMovie(Long id) {
-        Movie movie = findMovieByIdOrThrow(id);
-        for (WatchedMovies watchedMovie : movie.getWatchedMovies()) {
-            watchedMovieRepository.delete(watchedMovie);
-        }
-        movie.getWatchedMovies().clear();
-        for (Watchlist watchlist : movie.getWatchlists()) {
-            watchlist.getMovies().remove(movie);
-        }
-        movie.getWatchlists().clear();
-        movie.getReviews().clear();
-        movieRepository.delete(movie);
-    }
-
-    // Adaugă loguri în MovieService
     @Transactional(readOnly = true)
     public List<MovieResponse> searchByTitle(String title) {
         System.out.println("Searching for title: " + title);
         List<Movie> movies = movieRepository.findByTitleContainingIgnoreCase(title);
         System.out.println("Found movies: " + movies.size());
-        return mapMoviesToResponses(movies);
-    }
-
-    @Transactional(readOnly = true)
-    public List<MovieResponse> searchByGenre(String genre) {
-        Genre genreEnum = Genre.valueOf(genre.toUpperCase());
-        return mapMoviesToResponses(movieRepository.findByGenre(genreEnum));
-    }
-
-    public List<MovieResponse> searchByActors(String actorNames) {
-        String[] actorArray = actorNames.split(",");
-        Set<Actor> actors = Arrays.stream(actorArray)
-                .map(String::trim)
-                .map(name -> actorRepository.findByName(name)
-                        .orElseThrow(() -> new ResourceNotFoundException("Actor not found with name: " + name)))
-                .collect(Collectors.toSet());
-
-        List<Movie> movies = movieRepository.findByActorsIn(actors);
-        return mapMoviesToResponses(movies);
-    }
-
-    public List<MovieResponse> getAllMoviesSortedByReleaseYear() {
-        List<Movie> movies = movieRepository.findAll();
-        return mapMoviesToResponses(sortMoviesByReleaseYear(movies));
-    }
-
-    @Transactional
-    public List<MovieUserDetails> getMovies(User user) {
-        List<Movie> movies = movieRepository.findAll();
-        return movies.stream()
-                .map(movie -> {
-                    MovieUserDetails dto = movieDetailsMapper.toDetailsDTO(movie);
-                    dto.setWatched(mapWatchedStatus(movie, user));
-                    return dto;
-                })
-                .collect(Collectors.toList());
-    }
-
-    public List<MovieResponse> getAllMovies() {
-        List<Movie> movies = movieRepository.findAll();
         return mapMoviesToResponses(movies);
     }
 
@@ -327,3 +236,35 @@ public class MovieService {
         return mapMoviesToResponses(recommended);
     }
 }
+
+//    public MovieResponse updateMovie(Long id, MovieRequest movieRequest) {
+//        Movie existingMovie = findMovieByIdOrThrow(id);
+//
+//        existingMovie.setTitle(movieRequest.getTitle());
+//        existingMovie.setDescription(movieRequest.getDescription());
+//        existingMovie.setReleaseYear(movieRequest.getReleaseYear());
+//        existingMovie.setGenre(movieRequest.getGenre());
+//        existingMovie.setPhotoUrl(movieRequest.getPhotoUrl());
+//        Director director = findDirectorByNameOrThrow(movieRequest.getDirector());
+//        existingMovie.setDirector(director);
+//        Set<Actor> actors = findActorsByNameOrThrow(movieRequest.getActors());
+//        existingMovie.setActors(actors);
+//
+//        Movie updatedMovie = movieRepository.save(existingMovie);
+//        return movieMapper.toResponse(updatedMovie);
+//    }
+//
+//    @Transactional
+//    public void deleteMovie(Long id) {
+//        Movie movie = findMovieByIdOrThrow(id);
+//        for (WatchedMovies watchedMovie : movie.getWatchedMovies()) {
+//            watchedMovieRepository.delete(watchedMovie);
+//        }
+//        movie.getWatchedMovies().clear();
+//        for (Watchlist watchlist : movie.getWatchlists()) {
+//            watchlist.getMovies().remove(movie);
+//        }
+//        movie.getWatchlists().clear();
+//        movie.getReviews().clear();
+//        movieRepository.delete(movie);
+//    }

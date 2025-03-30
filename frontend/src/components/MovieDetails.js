@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getMovieDetails } from '../services/api';
 import { addToWatchlist, removeFromWatchlist, markAsWatched, checkWatchedStatus, getWatchlistsWithStatus } from '../services/watchlistApi';
 import { getUserReviewForMovie, addReview, updateReview, deleteReview } from '../services/reviewApi';
@@ -28,6 +28,7 @@ const MovieDetails = () => {
     const [existingReview, setExistingReview] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const navigate = useNavigate();
 
     // Fetch movie details and initial states
     useEffect(() => {
@@ -39,19 +40,40 @@ const MovieDetails = () => {
     
         const fetchData = async () => {
             try {
-                const data = await getMovieDetails(movieId);
-                setMovie(data);
+                // Pas 1: Încarcă detaliile filmului
+                const movieData = await getMovieDetails(movieId);
+                setMovie(movieData);
     
-                const watchedStatus = await checkWatchedStatus(movieId);
-                setIsWatched(watchedStatus);
+                // Pas 2: Verifică autentificarea și încarcă date protejate
+                const token = localStorage.getItem('token');
+                if (token) {
+                    try {
+                        const [watchedStatus, userWatchlists] = await Promise.all([
+                            checkWatchedStatus(movieId),
+                            getWatchlistsWithStatus(movieId)
+                        ]);
     
-                const userWatchlists = await getWatchlistsWithStatus(movieId);
-                setWatchlists(userWatchlists);
+                        setIsWatched(watchedStatus);
+                        setWatchlists(userWatchlists || []);
     
-                await handleUserReview(movieId); // Apelează funcția separată
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                setErrorMessage('Failed to load movie details');
+                        // Apelează funcția separată pentru review-uri utilizator
+                        const userReview = await getUserReviewForMovie(movieId);
+                        if (userReview && userReview.id) {
+                            setExistingReview(userReview);
+                            setRating(userReview.rating);
+                            setComment(userReview.comment);
+                            setReviewType(userReview.reviewType);
+                        } else {
+                            setExistingReview(null);}
+                    } catch (protectedError) {
+                        console.error('Error fetching protected data:', protectedError);
+                    }
+                }
+            } catch (mainError) {
+                console.error('Error fetching movie details:', mainError);
+                setErrorMessage(mainError.response?.status === 404
+                    ? 'Filmul nu a fost găsit'
+                    : 'Eroare la încărcarea detaliilor');
             } finally {
                 setLoading(false);
             }
@@ -59,9 +81,14 @@ const MovieDetails = () => {
     
         fetchData();
     }, [movieId]);
+    
 
     // Gestionează adăugarea/ștergerea din watchlist
     const handleWatchlistToggle = async (watchlistId, containsMovie) => {
+        if (!localStorage.getItem('token')) {
+            navigate('/login');
+            return;
+        }
         try {
             if (containsMovie) {
                 await removeFromWatchlist(watchlistId, movieId);
@@ -84,12 +111,14 @@ const MovieDetails = () => {
             const userReview = await getUserReviewForMovie(movieId);
             console.log('userReview:', userReview);
     
-            if (userReview && userReview.rating !== undefined) {
+            if (userReview && userReview.id) {
                 setExistingReview(userReview);
                 setRating(userReview.rating || 0);
                 setComment(userReview.comment || '');
                 setReviewType(userReview.reviewType || 'PUBLIC');
-            }
+            } else {
+                setExistingReview(null);
+              }
         } catch (error) {
             console.error('Error fetching user review:', error);
         }
@@ -97,6 +126,10 @@ const MovieDetails = () => {
 
     // Gestionează marcarea ca "watched"
     const handleWatchedToggle = async () => {
+        if (!localStorage.getItem('token')) {
+            navigate('/login');
+            return;
+        }
         try {
             await markAsWatched(movieId);
             setIsWatched(!isWatched); // Comută starea locală
@@ -107,15 +140,23 @@ const MovieDetails = () => {
 
     // Gestionează trimiterea review-ului
     const handleSubmit = async (selectedReviewType) => {
+        // Verifică dacă utilizatorul este autentificat
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+    
         const finalReviewType = selectedReviewType || reviewType;
         const reviewData = {
             movieId,
             rating,
             comment,
-            reviewType: finalReviewType // Prioritizează valoarea de la buton
+            reviewType: finalReviewType
         };
+        
         try {
-            if (existingReview) {
+            if (existingReview?.id) {
                 await updateReview(existingReview.id, reviewData);
             } else {
                 await addReview(reviewData);
@@ -125,6 +166,10 @@ const MovieDetails = () => {
             setReviewType(finalReviewType);
         } catch (error) {
             console.error('Error submitting review:', error);
+            if (error.response?.status === 401 || error.response?.status === 403) {
+                localStorage.removeItem('token');
+                navigate('/login');
+            }
         }
     };
 
@@ -170,15 +215,13 @@ const MovieDetails = () => {
                                 onMouseEnter={() => setShowDropdown(true)} 
                                 onMouseLeave={() => setShowDropdown(false)}
                             >
-                                <img 
-                                    src={watchlists.some(w => w.containsMovie) ? FilledWatchlistIcon : WatchlistIcon} 
-                                    alt="Watchlist" 
-                                />
+                                <img src={Array.isArray(watchlists) && watchlists.some(w => w?.containsMovie) ? FilledWatchlistIcon : WatchlistIcon} alt="Watchlist"/>
                                 {showDropdown && (
                                     <div className="watchlist-dropdown"
                                     onMouseEnter={() => setShowDropdown(true)}
                                     onMouseLeave={() => setShowDropdown(false)}>
-                                        {watchlists.map(watchlist => (
+                                        {Array.isArray(watchlists) && watchlists.length > 0 ? (
+      watchlists.map(watchlist => (
                                             <div 
                                                 key={watchlist.id}
                                                 className="watchlist-item"
@@ -186,13 +229,18 @@ const MovieDetails = () => {
                                             >
                                                 <input 
                                                     type="checkbox" 
-                                                    checked={watchlist.containsMovie} 
+                                                    checked={watchlist?.containsMovie || false}  
                                                     readOnly
                                                 />
                                                 {watchlist.name}
                                             </div>
-                                        ))}
-                                    </div>
+                                        ))
+                                    ) : (
+                                      <div className="empty-watchlist-message">
+                                        No watchlists available
+                                      </div>
+                                    )}
+                                  </div>
                                 )}
                             </div>
 
@@ -219,7 +267,7 @@ const MovieDetails = () => {
                     <div className="movie-section">
                         <p>
                             <strong>Cast: </strong> 
-                            {movie.actors?.map((actor, index) => (
+                            {(movie.actors || []).map((actor, index) => (
                                 <span key={actor.id || actor}>
                                     {actor}{index < movie.actors.length - 1 && ', '}
                                 </span>
@@ -228,34 +276,34 @@ const MovieDetails = () => {
                     </div>
 
                     {/* Secțiunea de review */}
-                    <div className="add-a-review-container">
-                        <div className="title-add-review">
-                            <img 
-                                src='/icons/add-review.svg'
-                                alt="Review" 
-                                className="add-review-img"
-                            />
-                            <p>{(existingReview && !isEditing) ? 'Your review' : 'Add a review'}</p>
-                        </div>
+                <div className="add-a-review-container">
+                    <div className="title-add-review">
+                        <img 
+                            src='/icons/add-review.svg'
+                            alt="Review" 
+                            className="add-review-img"
+                        />
+                        <p>{(existingReview && !isEditing) ? 'Your review' : 'Add a review'}</p>
+                    </div>
 
-                        {/* Stele de rating */}
-                        <div className="star-rating">
-                            {[...Array(10)].map((_, index) => {
-                                const ratingValue = index + 1;
-                                return (
-                                    <img
-                                        key={index}
-                                        src={ratingValue <= (hoverRating || rating) ? '/icons/full_star.svg' : '/icons/empty_star.svg'}
-                                        alt="Star"
-                                        className="star"
-                                        onMouseEnter={() => (!existingReview || isEditing) && setHoverRating(ratingValue)}
-                                        onMouseLeave={() => (!existingReview || isEditing) && setHoverRating(0)}
-                                        onClick={() => (!existingReview || isEditing) && setRating(ratingValue)}
-                                    />
-                                );
-                            })}
-                        </div>
-<div className='review-container'>
+                    {/* Stele de rating */}
+                    <div className="star-rating">
+                        {[...Array(10)].map((_, index) => {
+                            const ratingValue = index + 1;
+                            return (
+                                <img
+                                    key={index}
+                                    src={ratingValue <= (hoverRating || rating) ? '/icons/full_star.svg' : '/icons/empty_star.svg'}
+                                    alt="Star"
+                                    className="star"
+                                    onMouseEnter={() => (!existingReview || isEditing) && setHoverRating(ratingValue)}
+                                    onMouseLeave={() => (!existingReview || isEditing) && setHoverRating(0)}
+                                    onClick={() => (!existingReview || isEditing) && setRating(ratingValue)}
+                                />
+                            );
+                        })}
+                    </div>
+                    <div className='review-container'>
                         {/* Casetă comentariu */}
                         <textarea
                             className="review-textarea"
@@ -263,9 +311,9 @@ const MovieDetails = () => {
                             value={comment}
                             onChange={(e) => (!existingReview || isEditing) && setComment(e.target.value)}
                             onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) { // Verifică apăsarea Enter fără Shift
-                                    e.preventDefault(); // Previne comportamentul implicit (salt linie nouă)
-                                    handleSubmit('PUBLIC'); // Trimitere automată ca "Public"
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSubmit('PUBLIC');
                                 }
                             }}
                             disabled={!!existingReview && !isEditing}
@@ -273,46 +321,66 @@ const MovieDetails = () => {
                         
                         {/* Butoane acțiune */}
                         <div className="review-actions">
-                        {(isEditing || !existingReview) ? (
-                        <>
-                            <button 
+                        {existingReview?.id ? ( 
+                            isEditing ? (
+                            <>
+                                <button 
                                 className={`type-btn ${reviewType === 'PUBLIC' ? 'active' : ''}`}
-                                onClick={() => {
-                                    setReviewType('PUBLIC');
-                                    handleSubmit('PUBLIC');
-                                }}
-                            >
+                                onClick={() => handleSubmit('PUBLIC')}
+                                >
                                 🌐 Public
-                            </button>
-                            <button
+                                </button>
+                                <button 
                                 className={`type-btn ${reviewType === 'PRIVATE' ? 'active' : ''}`}
-                                onClick={() => {
-                                    setReviewType('PRIVATE');
-                                    handleSubmit('PRIVATE');
-                                }}
-                            >
+                                onClick={() => handleSubmit('PRIVATE')}
+                                >
                                 👁️ Private
-                            </button>
-                        </>
-                    ) : (
-                                <>
-                                    <button 
-                                        className="edit-btn" 
-                                        onClick={() => {
-                                            setIsEditing(true);
-                                            setReviewType(existingReview.reviewType); // Resetează reviewType la valoarea originală
-                                        }}
-                                    >
-                                        <img src="/icons/edit.svg" alt="Edit" />
-                                        Edit</button>
-                                    <button className="delete-btn" onClick={() => setShowDeleteModal(true)}>
-                                        <img src="/icons/delete.svg" alt="Delete" />
-                                        Delete</button>
-                                </>
+                                </button>
+                            </>
+                            ) : (
+                            <>
+                                <button 
+                                className="edit-btn" 
+                                onClick={() => {setIsEditing(true);
+                                    setReviewType(existingReview.reviewType); 
+                                }}
+                                >
+                                <img src="/icons/edit.svg" alt="Edit"/> Edit
+                                </button>
+                                <button 
+                                className="delete-btn" 
+                                onClick={() => setShowDeleteModal(true)}
+                                >
+                                <img src="/icons/delete.svg" alt="Delete"/> Delete
+                                </button>
+                            </>
+                            )
+                        ) : (
+                                localStorage.getItem('token') ? (
+                                    <>
+                                        <button className={`type-btn ${reviewType === 'PUBLIC' ? 'active' : ''}`}
+                                            onClick={() => handleSubmit('PUBLIC')}>
+                                            🌐 Public
+                                        </button>
+                                        <button className={`type-btn ${reviewType === 'PRIVATE' ? 'active' : ''}`}
+                                            onClick={() => handleSubmit('PRIVATE')}>
+                                            👁️ Private
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button className="type-btn" onClick={() => navigate('/login')}>
+                                            🌐 Public
+                                        </button>
+                                        <button className="type-btn" onClick={() => navigate('/login')}>
+                                            👁️ Private
+                                        </button>
+                                    </>
+                                )
                             )}
                         </div>
                     </div>
-                    </div>
+                </div>
                 </div>
             </div>
 
@@ -322,7 +390,7 @@ const MovieDetails = () => {
                     <h3>Reviews</h3>
                     {movie.reviews?.length > 0 ? (
                         <div className="reviews-container">
-                            {movie.reviews.map((review) => (
+                            {(movie.reviews || []).map((review) => (
                                 <div key={review.id || `${review.username}-${review.comment}`} className="review-card">
                                     <div className="review-header">
                                         <span className="review-username">{review.username}</span>

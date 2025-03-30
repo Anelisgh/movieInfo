@@ -10,6 +10,7 @@ const LoginPage = () => {
     password: '', 
     rememberMe: false 
   });
+  const [errors, setErrors] = useState({});
   
   const navigate = useNavigate();
 
@@ -35,7 +36,14 @@ const LoginPage = () => {
         navigate('/'); 
       }
     } catch (error) {
-      console.error('Login error:', error.response?.data || error.message);
+      const backendError = error.response?.data?.error;
+      if (backendError === 'Username not found') {
+        setErrors({ username: backendError });
+      } else if (backendError === 'Invalid password') {
+        setErrors({ password: backendError });
+      } else {
+        setErrors({ general: 'Login failed. Please try again.' });
+      }
     }
   };
 
@@ -45,26 +53,29 @@ const LoginPage = () => {
       <div className="auth-wrapper">
         <div className="auth-card glass-effect">
           <h2 className="auth-title">Login</h2>
+          {errors.general && <div className="error-message general-error">{errors.general}</div>}
           <form onSubmit={handleSubmit} className="auth-form">
-            <div className="form-group">
-              <label htmlFor="username" className="form-label">Username</label>
-              <input
-                id="username"
-                type="text"
-                className="form-input"
-                onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
-              />
-            </div>
+          <div className="form-group">
+          <label htmlFor="username" className="form-label">Username</label>
+          <input
+            id="username"
+            type="text"
+            className={`form-input ${errors.username ? 'input-error' : ''}`}
+            onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+          />
+          {errors.username && <div className="error-message">{errors.username}</div>}
+        </div>
 
-            <div className="form-group">
-              <label htmlFor="password" className="form-label">Password</label>
-              <input
-                id="password"
-                type="password"
-                className="form-input"
-                onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-              />
-            </div>
+        <div className="form-group">
+          <label htmlFor="password" className="form-label">Password</label>
+          <input
+            id="password"
+            type="password"
+            className={`form-input ${errors.password ? 'input-error' : ''}`}
+            onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+          />
+          {errors.password && <div className="error-message">{errors.password}</div>}
+        </div>
 
             <div className="remember-group">
               <input

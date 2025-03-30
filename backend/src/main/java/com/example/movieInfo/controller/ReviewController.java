@@ -17,6 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+
 @RestController
 @RequestMapping("/reviews")
 @Validated
@@ -56,13 +58,20 @@ public class ReviewController {
     }
 
     @GetMapping("/user/{movieId}")
-    public ResponseEntity<ReviewResponse> getUserReviewForMovie(@PathVariable Long movieId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+    public ResponseEntity<?> getUserReviewForMovie(@PathVariable Long movieId) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.ok(Collections.emptyMap());
+            }
 
-        Review review = reviewService.findByUserAndMovie(username, movieId)
-                .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
+            String username = authentication.getName();
+            Review review = reviewService.findByUserAndMovie(username, movieId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
 
-        return ResponseEntity.ok(reviewMapper.toReviewResponse(review));
+            return ResponseEntity.ok(reviewMapper.toReviewResponse(review));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.ok(Collections.emptyMap());
+        }
     }
 }

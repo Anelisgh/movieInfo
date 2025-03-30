@@ -10,9 +10,13 @@ import com.example.movieInfo.exception.ResourceNotFoundException;
 import com.example.movieInfo.mapper.UserMapper;
 import com.example.movieInfo.model.User;
 import com.example.movieInfo.config.JwtConfig;
+import com.example.movieInfo.repository.ReviewRepository;
 import com.example.movieInfo.repository.UserRepository;
+import com.example.movieInfo.repository.WatchedMovieRepository;
+import com.example.movieInfo.repository.WatchlistRepository;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,6 +25,8 @@ import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
@@ -33,24 +39,34 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final JwtConfig jwtConfig;
+    private final WatchedMovieRepository watchedMovieRepository;
+    private final ReviewRepository reviewRepository;
+    private final WatchlistRepository watchlistRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper, JwtConfig jwtConfig) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper, JwtConfig jwtConfig, WatchedMovieRepository watchedMovieRepository, ReviewRepository reviewRepository, WatchlistRepository watchlistRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
         this.jwtConfig = jwtConfig;
+        this.watchedMovieRepository = watchedMovieRepository;
+        this.reviewRepository = reviewRepository;
+        this.watchlistRepository = watchlistRepository;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByName(username)
+    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
+        if (!userRepository.existsByName(name)) {
+            throw new UsernameNotFoundException("Username not found");
+        }
+
+        return userRepository.findByName(name)
                 .map(user -> new org.springframework.security.core.userdetails.User(
                         user.getName(),
                         user.getPassword(),
                         new ArrayList<>()
                 ))
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new BadCredentialsException("Invalid password"));
     }
 
     public UserResponse registerUser(RegisterRequest registerRequest) {
@@ -77,10 +93,13 @@ public class UserService implements UserDetailsService {
         return userMapper.toResponse(savedUser);
     }
 
-    public boolean authenticateUser(String username, String password) {
-        return userRepository.findByName(username)
-                .map(user -> passwordEncoder.matches(password, user.getPassword()))
-                .orElse(false);
+    public void authenticateUser(String name, String password) {
+        User user = userRepository.findByName(name)
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
     }
 
     private User findUserByIdOrThrow(Long id) {
@@ -91,14 +110,14 @@ public class UserService implements UserDetailsService {
     private void checkForDuplicateEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) {
-            throw new DuplicateResourceException("User already exists with email: " + email);
+            throw new DuplicateResourceException("An user already exists with this email");
         }
     }
 
     private void checkForDuplicateName(String name) {
         Optional<User> user = userRepository.findByName(name);
         if (user.isPresent()) {
-            throw new DuplicateResourceException("User already exists with name: " + name);
+            throw new DuplicateResourceException("An user already exists with this name");
         }
     }
 
@@ -106,6 +125,7 @@ public class UserService implements UserDetailsService {
         return findUserByIdOrThrow(id);
     }
 
+    @Transactional
     public UserResponse updateUser(Long id, RegisterRequest registerRequest) {
         User existingUser = findUserByIdOrThrow(id);
 
@@ -125,8 +145,12 @@ public class UserService implements UserDetailsService {
         return userMapper.toResponse(updatedUser);
     }
 
+    @Transactional
     public void deleteUser(Long id) {
         User user = findUserByIdOrThrow(id);
+        watchedMovieRepository.deleteAllByUser(user);
+        reviewRepository.deleteAllByUser(user);
+        watchlistRepository.deleteAllByUser(user);
         userRepository.delete(user);
     }
 
@@ -139,6 +163,7 @@ public class UserService implements UserDetailsService {
                 .compact();
     }
 
+    @Transactional
     public UserResponse updateProfile(String username, UpdateProfileRequest request) {
         User user = userRepository.findByName(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -157,6 +182,7 @@ public class UserService implements UserDetailsService {
         return userMapper.toResponse(updatedUser);
     }
 
+    @Transactional
     public void updatePassword(String username, UpdatePasswordRequest request) {
         User user = userRepository.findByName(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
-import { updateProfile, updatePassword } from '../services/userApi';
+import { updateProfile, updatePassword, deleteAccount } from '../services/userApi';
 import Navbar from './Navbar';
 import '../styles/ProfileSettings.css';
 
@@ -10,36 +10,39 @@ const ProfileSettings = () => {
     const [passwordData, setPasswordData] = useState({ oldPassword: '', newPassword: '' });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const token = localStorage.getItem('token');
+                console.log('Fetching user data with token:', token);
+                
                 if (!token) {
+                    console.log('No token found, redirecting...');
                     navigate('/login');
                     return;
                 }
-
-                const response = await API.get('/auth/me', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                const userData = response.data.data;
+    
+                const response = await API.get('/auth/me');
+                console.log('User data response:', response.data);
+                
                 setProfileData({
-                    name: userData.name,
-                    email: userData.email,
+                    name: response.data.data.name,
+                    email: response.data.data.email
                 });
             } catch (error) {
-                console.error('Error fetching user data:', error);
-                setError('Unable to load profile data');
-                if (error.response && error.response.status === 401) {
+                console.error('Profile fetch error:', error);
+                if (error.response?.status === 401 || error.response?.status === 403) {
+                    localStorage.removeItem('token');
                     navigate('/login');
+                } else {
+                    setError('Unable to load profile data');
                 }
             }
         };
-
         fetchUserData();
     }, [navigate]);
 
@@ -73,6 +76,16 @@ const ProfileSettings = () => {
         } catch (error) {
             setError('The old password is incorrect');
             setSuccess('');
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        try {
+            await deleteAccount();
+            localStorage.removeItem('token');
+            navigate('/login');
+        } catch (error) {
+            setError('Failed to delete account');
         }
     };
 
@@ -137,6 +150,38 @@ const ProfileSettings = () => {
                     </div>
                     <button type="submit" className="submit-btn">Confirm</button>
                 </form>
+            
+            <div className="danger-zone">
+                    <button 
+                        type="button" 
+                        className="delete-btn"
+                        onClick={() => setShowDeleteModal(true)}
+                    >
+                        Delete Account
+                    </button>
+                    </div>
+                    {showDeleteModal && (
+                    <div className="delete-modal-overlay">
+                        <div className="delete-modal-content">
+                            <h3>Confirm Account Deletion</h3>
+                            <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                            <div className="modal-buttons">
+                                <button 
+                                    className="modal-btn confirm-btn"
+                                    onClick={handleDeleteAccount}
+                                >
+                                    Delete Permanently
+                                </button>
+                                <button
+                                    className="modal-btn cancel-btn"
+                                    onClick={() => setShowDeleteModal(false)}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    )}
             </div>
         </div>
     );

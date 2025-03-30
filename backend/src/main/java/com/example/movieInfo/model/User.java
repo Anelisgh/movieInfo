@@ -2,6 +2,7 @@ package com.example.movieInfo.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,11 +15,14 @@ public class User {
     private String email;
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Review> reviews;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Watchlist> watchlists;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Watchlist> watchlists = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<WatchedMovies> watchedMovies = new ArrayList<>();
 
     public User(){
 
@@ -82,5 +86,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<WatchedMovies> getWatchedMovies() {
+        return watchedMovies;
+    }
+
+    public void setWatchedMovies(List<WatchedMovies> watchedMovies) {
+        this.watchedMovies = watchedMovies;
     }
 }

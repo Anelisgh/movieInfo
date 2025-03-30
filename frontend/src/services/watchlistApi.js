@@ -23,7 +23,7 @@ export const createWatchlist = async (watchlistData) => {
 // Obține recomandări de filme pentru utilizator
 export const getRecommendations = async () => {
   try {
-    const response = await API.get('/movies/recommendations');
+    const response = await API.get('/api/movies/recommendations');
     console.log('Recommendations data:', response.data);
     return response.data;
   } catch (error) {

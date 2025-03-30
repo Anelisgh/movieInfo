@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     Optional<Object> findByMovieId(Long movieId);
-
     Optional<Review> findByUserAndMovieId(User user, Long movieId);
+    void deleteAllByUser(User user);
 }
 

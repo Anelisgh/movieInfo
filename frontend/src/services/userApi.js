@@ -17,3 +17,12 @@ export const updatePassword = async (data) => {
         throw error;
     }
 };
+
+export const deleteAccount = async () => {
+    try {
+        const response = await API.delete('/auth/delete');
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};

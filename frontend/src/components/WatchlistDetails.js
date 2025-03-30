@@ -37,6 +37,24 @@ const WatchlistDetails = () => {
     fetchData();
   }, [id]);
 
+  const handleInput = (e) => {
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    const cursorPosition = range.startOffset;
+    
+    setNewName(e.target.textContent);
+    
+    // După re-render, restaurează poziția cursorului
+    setTimeout(() => {
+      const newRange = document.createRange();
+      const textNode = e.target.firstChild;
+      newRange.setStart(textNode, Math.min(cursorPosition, textNode.length));
+      newRange.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(newRange);
+    }, 0);
+  };
+
   const handleEditToggle = () => {
     if (isEditMode) {
       // Save watchlist name if changed
@@ -118,7 +136,7 @@ const WatchlistDetails = () => {
               <div
                 contentEditable
                 suppressContentEditableWarning
-                onInput={(e) => setNewName(e.target.textContent)}
+                onInput={handleInput}
                 className="edit-name-display"
               >
                 {newName}

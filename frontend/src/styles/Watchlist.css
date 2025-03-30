@@ -260,7 +260,9 @@ h2 {
   
   .modal-buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
   }
   
   .modal-buttons button {
@@ -272,21 +274,21 @@ h2 {
   }
   
   .modal-buttons button:first-child {
-    background-color: #C19191; /* Aliniat cu hover-ul din .create-list-button */
-    color: white;
+    background-color: #f0f0f0;
+    color: #333;
 }
 
 .modal-buttons button:first-child:hover {
-    background-color: #A87373; /* O nuanță mai închisă pentru efectul hover */
+  background-color: #e0e0e0;
 }
 
 .modal-buttons button:last-child {
-    background-color: #AA7070; 
-    color: white;
+  background-color: #ff4d4f;
+  color: white;
 }
 
 .modal-buttons button:last-child:hover {
-    background-color: #AA7070; /* Efect hover pentru butonul de anulare */
+  background-color: #ff3333;
 }
 
 .modal-content h3{

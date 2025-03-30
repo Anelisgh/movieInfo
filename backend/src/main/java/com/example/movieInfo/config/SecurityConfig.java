@@ -46,11 +46,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Adaugă configurația CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/movies/add", "/watchlists/**", "/users/profile", "/users/password", "/auth/profile", "/auth/me").authenticated()
-                        .requestMatchers("/auth/register", "/auth/login", "/movies/recommendations").permitAll()
+                        .requestMatchers(
+                                "/api/movies/add",
+                                "/watchlists/**",
+                                "/users/**",
+                                "/auth/me",
+                                "/auth/profile",
+                                "/auth/password"
+                        ).authenticated()
+                        .requestMatchers(
+                                "/auth/register",
+                                "/auth/login",
+                                "/api/movies/recommendations",
+                                "/api/movies/search",
+                                "/api/movies/genres",
+                                "/api/movies/*" // Permite toate rutele /api/movies/{orice}
+                        ).permitAll()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
@@ -65,6 +79,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("http://localhost:3000")); // Frontend URL
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Metode permise
         config.setAllowedHeaders(List.of("*")); // Headere permise
+        config.setExposedHeaders(List.of("Authorization"));
         config.setAllowCredentials(true); // Permite credențiale (cookies, token-uri)
         config.setMaxAge(3600L); // Cache pentru preflight requests (1 oră)
 
@@ -84,4 +99,6 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
+
 }
