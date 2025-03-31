@@ -2,11 +2,11 @@ import axios from 'axios';
 
 // Creează instanța Axios
 const API = axios.create({
-  baseURL: 'https://movieinfo-ftki.onrender.com', // URL-ul backend-ului
-  withCredentials: true,
-  // headers: {
-  //   'Content-Type': 'application/json',
-  // },
+  baseURL: process.env.REACT_APP_API_URL || 'https://movieinfo-ftki.onrender.com' // URL-ul backend-ului
+  // withCredentials: true,
+  // // headers: {
+  // //   'Content-Type': 'application/json',
+  // // },
 });
 
 // Adaugă un interceptor pentru a atașa token-ul JWT la fiecare request

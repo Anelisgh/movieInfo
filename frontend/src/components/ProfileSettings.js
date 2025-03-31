@@ -11,7 +11,6 @@ const ProfileSettings = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {

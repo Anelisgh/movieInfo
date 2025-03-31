@@ -73,20 +73,21 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("https://movieinfo-ftki.onrender.com")); // Frontend URL
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Metode permise
-        config.setAllowedHeaders(List.of("*")); // Headere permise
-        config.setExposedHeaders(List.of("Authorization"));
-        config.setAllowCredentials(true); // Permite credențiale (cookies, token-uri)
-        config.setMaxAge(3600L); // Cache pentru preflight requests (1 oră)
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowedOrigins(List.of(
+                    "https://movieinfo-ftki.onrender.com", // Frontend-ul tău
+                    "http://localhost:3000"                // Pentru developement local
+            ));
+            config.setAllowedMethods(List.of("*"));
+            config.setAllowedHeaders(List.of("*"));
+            config.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config); // Aplică configurația pentru toate endpoint-urile
-        return source;
-    }
+            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+            source.registerCorsConfiguration("/**", config);
+            return source;
+        }
 
     @Bean
     public PersistentTokenRepository persistentTokenRepository() {
