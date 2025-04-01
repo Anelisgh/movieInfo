@@ -1,3 +1,115 @@
+-- INIT.SQL COMPLET SINCRONIZAT CU ENTITĂȚILE JPA
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS watchlist_movie;
+DROP TABLE IF EXISTS watched_movies;
+DROP TABLE IF EXISTS reviews;
+DROP TABLE IF EXISTS watchlists;
+DROP TABLE IF EXISTS movie_actor;
+DROP TABLE IF EXISTS movies;
+DROP TABLE IF EXISTS actors;
+DROP TABLE IF EXISTS directors;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS persistent_logins;
+
+CREATE TABLE directors (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    birth_date DATE,
+    debut_year INT,
+    is_active BIT(1),
+    PRIMARY KEY (id),
+    UNIQUE KEY UK_director_name (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE actors (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    birth_date DATE,
+    debut_year INT,
+    is_active BIT(1),
+    PRIMARY KEY (id),
+    UNIQUE KEY UK_actor_name (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE users (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    email VARCHAR(255),
+    name VARCHAR(255),
+    password VARCHAR(255),
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE movies (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    description VARCHAR(255),
+    genre ENUM('ACTION','ADVENTURE','ANIMATION','COMEDY','DOCUMENTARY','DRAMA','FANTASY','HORROR','ROMANCE','SCI_FI','THRILLER'),
+    release_year INT,
+    photo_url VARCHAR(255),
+    director_id BIGINT,
+    PRIMARY KEY (id),
+    UNIQUE KEY UK_movie_title (title),
+    CONSTRAINT FK_movie_director FOREIGN KEY (director_id) REFERENCES directors (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE movie_actor (
+    movie_id BIGINT NOT NULL,
+    actor_id BIGINT NOT NULL,
+    PRIMARY KEY (movie_id, actor_id),
+    CONSTRAINT FK_movie_actor_movie FOREIGN KEY (movie_id) REFERENCES movies (id),
+    CONSTRAINT FK_movie_actor_actor FOREIGN KEY (actor_id) REFERENCES actors (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE watchlists (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255),
+    user_id BIGINT,
+    PRIMARY KEY (id),
+    CONSTRAINT FK_watchlist_user FOREIGN KEY (user_id) REFERENCES users (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE watchlist_movie (
+    watchlist_id BIGINT NOT NULL,
+    movie_id BIGINT NOT NULL,
+    PRIMARY KEY (watchlist_id, movie_id),
+    CONSTRAINT FK_watchlist_movie_watchlist FOREIGN KEY (watchlist_id) REFERENCES watchlists (id),
+    CONSTRAINT FK_watchlist_movie_movie FOREIGN KEY (movie_id) REFERENCES movies (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE watched_movies (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    is_watched BIT(1),
+    watch_date DATE,
+    movie_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT FK_watched_movie_movie FOREIGN KEY (movie_id) REFERENCES movies (id),
+    CONSTRAINT FK_watched_movie_user FOREIGN KEY (user_id) REFERENCES users (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE reviews (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    comment VARCHAR(255),
+    rating DOUBLE,
+    type ENUM('PRIVATE','PUBLIC') NOT NULL,
+    movie_id BIGINT,
+    user_id BIGINT,
+    PRIMARY KEY (id),
+    CONSTRAINT FK_review_movie FOREIGN KEY (movie_id) REFERENCES movies (id),
+    CONSTRAINT FK_review_user FOREIGN KEY (user_id) REFERENCES users (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE persistent_logins (
+    username VARCHAR(64) NOT NULL,
+    series VARCHAR(64) NOT NULL,
+    token VARCHAR(64) NOT NULL,
+    last_used TIMESTAMP NOT NULL,
+    PRIMARY KEY (series)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
 INSERT INTO directors (name, birth_date, debut_year, is_active) VALUES
 ('Christopher Nolan', '1970-07-30', 1998, 1),
 ('Chris Columbus', '1958-09-10', 1987, 1),

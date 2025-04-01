@@ -7,26 +7,41 @@ services:
     deploy:
       resources:
         limits:
-          memory: 450M  # Maxim permis în free tier
+          memory: 450M  
     depends_on:
       mysql:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/movie_info?useSSL=false&autoReconnect=true&connectTimeout=30000
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/movie_info?useSSL=false&allowPublicKeyRetrieval=true&autoReconnect=true&connectTimeout=30000
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: Emma19
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      WAIT_HOSTS: mysql:3306
+      WAIT_TIMEOUT: 60
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"] 
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   mysql:
     image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: Emma19
       MYSQL_DATABASE: movie_info
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Emma19
+    ports:
+      - "3306:3306"
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pEmma19"]
+      test: ["CMD-SHELL", "mysql -uroot -pEmma19 -e 'SELECT 1' || exit 1"]
       interval: 5s
       timeout: 10s
-      retries: 30
+      retries: 10
+
+volumes:
+  mysql_data:
