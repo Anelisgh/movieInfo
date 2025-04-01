@@ -77,8 +77,7 @@ public class SecurityConfig {
         public CorsConfigurationSource corsConfigurationSource() {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedOrigins(List.of(
-                    "https://movieinfo-ftki.onrender.com", // Frontend-ul tău
-                    "http://localhost:3000"                // Pentru developement local
+                    "https://movieinfo-ftki.onrender.com"
             ));
             config.setAllowedMethods(List.of("*"));
             config.setAllowedHeaders(List.of("*"));

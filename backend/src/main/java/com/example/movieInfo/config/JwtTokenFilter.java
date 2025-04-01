@@ -75,6 +75,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
+            logger.error("JWT validation failed: " + e.getMessage());
             return false;
         }
     }
