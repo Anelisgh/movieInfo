@@ -13,7 +13,6 @@ services:
         condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/movie_info?useSSL=false&allowPublicKeyRetrieval=true&autoReconnect=true&connectTimeout=30000
-      SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: Emma19
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       WAIT_HOSTS: mysql:3306
@@ -30,8 +29,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: Emma19
       MYSQL_DATABASE: movie_info
-      MYSQL_USER: root
-      MYSQL_PASSWORD: Emma19
     ports:
       - "3306:3306"
     volumes:
