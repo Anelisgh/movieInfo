@@ -16,7 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(
-                        "https://movieinfo-ftki.onrender.com"
+                        "https://movieinfo-4kf5.onrender.com"
                 )
                 .allowedMethods("*")
                 .allowCredentials(true);

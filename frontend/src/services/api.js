@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Creează instanța Axios
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'https://movieinfo-ftki.onrender.com' // URL-ul backend-ului
+  baseURL: process.env.REACT_APP_API_URL || 'https://movieinfo-4kf5.onrender.com' // URL-ul backend-ului
   // withCredentials: true,
   // // headers: {
   // //   'Content-Type': 'application/json',

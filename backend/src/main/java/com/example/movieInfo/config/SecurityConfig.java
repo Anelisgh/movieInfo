@@ -77,7 +77,7 @@ public class SecurityConfig {
         public CorsConfigurationSource corsConfigurationSource() {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedOrigins(List.of(
-                    "https://movieinfo-ftki.onrender.com"
+                    "https://movieinfo-4kf5.onrender.com"
             ));
             config.setAllowedMethods(List.of("*"));
             config.setAllowedHeaders(List.of("*"));
