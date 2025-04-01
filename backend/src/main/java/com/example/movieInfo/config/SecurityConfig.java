@@ -76,7 +76,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("https://movieinfo-ftki.onrender.com")); // Frontend URL
+        config.setAllowedOrigins(List.of("http://localhost:3000")); // Frontend URL
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Metode permise
         config.setAllowedHeaders(List.of("*")); // Headere permise
         config.setExposedHeaders(List.of("Authorization"));
