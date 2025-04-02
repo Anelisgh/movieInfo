@@ -11,5 +11,5 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=builder /app/target/movieInfo.jar .
 EXPOSE 8080
-ENV SPRING_PROFILES_ACTIVE=prod
+ENV TZ=Europe/Bucharest
 CMD ["java", "-jar", "movieInfo.jar"]
