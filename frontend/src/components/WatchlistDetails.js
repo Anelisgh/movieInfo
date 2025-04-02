@@ -113,13 +113,19 @@ const WatchlistDetails = () => {
   };
 
   const handleMouseEnter = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current); // Anulează timer-ul dacă există
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
     setShowMoveDropdown(true);
   };
-
+  
   const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => setShowMoveDropdown(false), 300); // Delay de 300ms
+    timeoutRef.current = setTimeout(() => {
+      setShowMoveDropdown(false);
+    }, 1500); 
   };
+  
 
 
   if (loading) return <div className="loading">Loading...</div>;

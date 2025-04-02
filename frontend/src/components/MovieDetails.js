@@ -164,6 +164,7 @@ const MovieDetails = () => {
             await handleUserReview(movieId);
             setIsEditing(false);
             setReviewType(finalReviewType);
+            window.location.reload();
         } catch (error) {
             console.error('Error submitting review:', error);
             if (error.response?.status === 401 || error.response?.status === 403) {
