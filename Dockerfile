@@ -6,8 +6,10 @@ RUN ./mvnw dependency:go-offline -B
 COPY backend/src src
 COPY frontend/build src/main/resources/static/
 RUN ./mvnw clean package -DskipTests
+
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=builder /app/target/movieInfo.jar .
 EXPOSE 8080
+ENV SPRING_PROFILES_ACTIVE=prod
 CMD ["java", "-jar", "movieInfo.jar"]
