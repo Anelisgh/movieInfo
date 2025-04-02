@@ -15,6 +15,7 @@ const WatchlistDetails = () => {
   const [allWatchlists, setAllWatchlists] = useState([]);
   const [newName, setNewName] = useState('');
   const timeoutRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,6 +38,19 @@ const WatchlistDetails = () => {
     fetchData();
   }, [id]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowMoveDropdown(false);
+      }
+    };
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+  
   const handleInput = (e) => {
     const selection = window.getSelection();
     const range = selection.getRangeAt(0);
@@ -174,8 +188,7 @@ const WatchlistDetails = () => {
               <img
                 src="/icons/move_movies.svg"
                 alt="Move movies"
-                onMouseEnter={() => setShowMoveDropdown(true)}
-                onMouseLeave={() => setShowMoveDropdown(false)}
+                onClick={() => setShowMoveDropdown(!showMoveDropdown)}
               />
               <span className="icon-text">Move</span>
               {showMoveDropdown && (
