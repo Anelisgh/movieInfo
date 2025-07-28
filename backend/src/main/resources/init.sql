@@ -1,4 +1,3 @@
--- INIT.SQL COMPLET PENTRU POSTGRESQL
 DROP TABLE IF EXISTS watchlist_movie CASCADE;
 DROP TABLE IF EXISTS watched_movies CASCADE;
 DROP TABLE IF EXISTS reviews CASCADE;
@@ -9,6 +8,10 @@ DROP TABLE IF EXISTS actors CASCADE;
 DROP TABLE IF EXISTS directors CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS persistent_logins CASCADE;
+
+-- Șterge tipurile ENUM dacă există
+DROP TYPE IF EXISTS genre_type CASCADE;
+DROP TYPE IF EXISTS review_type CASCADE;
 
 -- Crearea tipurilor ENUM pentru PostgreSQL
 CREATE TYPE genre_type AS ENUM ('ACTION','ADVENTURE','ANIMATION','COMEDY','DOCUMENTARY','DRAMA','FANTASY','HORROR','ROMANCE','SCI_FI','THRILLER');
@@ -103,7 +106,7 @@ CREATE TABLE persistent_logins (
     PRIMARY KEY (series)
 );
 
--- Inserarea datelor
+-- Inserarea datelor (se face întotdeauna pentru că tabelele sunt recreate)
 INSERT INTO directors (name, birth_date, debut_year, is_active) VALUES
 ('Christopher Nolan', '1970-07-30', 1998, true),
 ('Chris Columbus', '1958-09-10', 1987, true),
